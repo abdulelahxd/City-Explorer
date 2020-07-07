@@ -45,6 +45,7 @@ server.get("/location", (req, res) => {
   superagent.get(url).then((geoData) => {
     const locationData = new Location(city, geoData.body);
     res.status(200).json(locationData);
+    // console.log(arrayFor);
   });
   ///////////////////// local way //////////////////////
   // this is the query to lookup requests
@@ -57,7 +58,7 @@ server.get("/location", (req, res) => {
   // res.send(locationObj);
 });
 
-let arrayFor = [];
+var arrayFor = [];
 // this is constructor for query the cities
 function Location(city, geoData) {
   this.search_query = city;
@@ -70,7 +71,6 @@ function Location(city, geoData) {
 //////////////////////////// route Two /////////////////////////////
 // this constructor is for weather query
 server.get("/weather", (req, res) => {
-  const city = req.query.city;
   // this is for hidding the key in env file
   let keyTwo = process.env.WEATHER_KEY;
   // this will hist the APIs servers and get data
@@ -87,45 +87,45 @@ server.get("/weather", (req, res) => {
     });
     res.send(weatherInfo);
   });
-  // this constructor for waether
-  function Weather(weatherDescription, weatherDateTime) {
-    this.forecast = weatherDescription;
-    this.time = new Date(weatherDateTime).toDateString();
-  }
 });
+// this constructor for waether
+function Weather(weatherDescription, weatherDateTime) {
+  this.forecast = weatherDescription;
+  this.time = new Date(weatherDateTime).toDateString();
+}
 
 //////////////////////////// route Three /////////////////////////////
 server.get("/trails", (req, res) => {
-  // this is the query
-  const city = req.query.city;
   // this is for hidding the key in env file
-  let key = process.env.TRAILS_KEY;
+  let key = process.env.TRAILSKEY;
   // this will hit the APIs servers and get data
-  // let url = `https://www.hikingproject.com/data/get-trails?lat=${arrayFor[0].latitude}&lon=${arrayFor[0].longitude}&key=${key}`;
-  let url = `https://www.hikingproject.com/data/get-trails?lat=40.0274&lon=-105.2519&key=${key}`;
-
+  // let url = `https://www.hikingproject.com/data/get-trails?lat=51.5073219&lon=-0.1276474&maxDistance=10&key=200826462-b74194978a1e8422bdc161b5b8df28f9`;
+  let L = arrayFor[0].latitude;
+  let L2 = arrayFor[0].longitude;
+  console.log(L);
+  console.log(L2);
+  let url = `https://www.hikingproject.com/data/get-trails?lat=${L}&lon=${L2}&maxDistance=10&key=${key}`;
   // super agent for storing the data that we request from the APIs servers
   superagent.get(url).then((hikingJSON) => {
-    // console.log(hikingJSON.body);
-    // const hikeInfo = new Hike(hikingJSON.body);
-
-    res.send("trails works fine");
+    let hikeInfo = hikingJSON.body.trails.map((val) => {
+      let newObj = new Hike(val);
+      return newObj;
+    });
+    res.status(200).json(hikeInfo);
   });
 });
-// this is a constructor for the hikes
-// function Hike(info) {
-//   this.name = 
-//   this.location =
-//   this.length =
-//   this.stars =
-//   this.star_votes =
-//   this.summary =
-//   this.trail_url =
-//   this.conditions =
-//   this.condition_date =
-//   this.condition_time = 
-// }
-
+function Hike(trailsData) {
+  this.name = trailsData.name;
+  this.location = trailsData.location;
+  this.length = trailsData.length;
+  this.stars = trailsData.stars;
+  this.star_votes = trailsData.star_votes;
+  this.summary = trailsData.summary;
+  this.trail_url = trailsData.trail_url;
+  this.conditions = trailsData.conditions;
+  this.condition_date = new Date(trailsData).toDateString();
+  this.condition_time = new Date(trailsData).toTimeString();
+}
 //  this is for all faild routes that the user might insert
 server.get("*", (req, res) => {
   res.status(404).send("this page is not found");
