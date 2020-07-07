@@ -33,6 +33,7 @@ server.get("/", (req, res) => {
 //////////////////////////// route One /////////////////////////////
 // this is for location route
 server.get("/location", (req, res) => {
+  arrayFor = [];
   // this is the query
   const city = req.query.city;
   // this is for hidding the key in env file
@@ -100,11 +101,12 @@ server.get("/trails", (req, res) => {
   // this is for hidding the key in env file
   let key = process.env.TRAILS_KEY;
   // this will hit the APIs servers and get data
-  let url = `https://www.hikingproject.com/data/get-trails?lat=${arrayFor[0].latitude}&lon=${arrayFor[0].longitude}&key=${key}`;
+  // let url = `https://www.hikingproject.com/data/get-trails?lat=${arrayFor[0].latitude}&lon=${arrayFor[0].longitude}&key=${key}`;
+  let url = `https://www.hikingproject.com/data/get-trails?lat=40.0274&lon=-105.2519&key=${key}`;
 
   // super agent for storing the data that we request from the APIs servers
   superagent.get(url).then((hikingJSON) => {
-    console.log(hikingJSON.body);
+    // console.log(hikingJSON.body);
     // const hikeInfo = new Hike(hikingJSON.body);
 
     res.send("trails works fine");
