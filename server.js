@@ -104,7 +104,7 @@ server.get("/trails", (req, res) => {
   let L2 = arrayFor[0].longitude;
   console.log(L);
   console.log(L2);
-  let url = `https://www.hikingproject.com/data/get-trails?lat=${L}&lon=${L2}&maxDistance=10&key=${key}`;
+  let url = `https://www.hikingproject.com/data/get-trails?lat=${L}&lon=${L2}&maxDistance=200&sort:distance&key=${key}`;
   // super agent for storing the data that we request from the APIs servers
   superagent.get(url).then((hikingJSON) => {
     let hikeInfo = hikingJSON.body.trails.map((val) => {
@@ -123,8 +123,8 @@ function Hike(trailsData) {
   this.summary = trailsData.summary;
   this.trail_url = trailsData.trail_url;
   this.conditions = trailsData.conditions;
-  this.condition_date = new Date(trailsData).toDateString();
-  this.condition_time = new Date(trailsData).toTimeString();
+  this.condition_date = trailsData.conditionDate.split(' ')[0];
+  this.condition_time = trailsData.conditionDate.split(' ')[1];
 }
 //  this is for all faild routes that the user might insert
 server.get("*", (req, res) => {
