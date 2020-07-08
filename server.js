@@ -67,11 +67,7 @@ server.get("/location", (req, res) => {
         });
       });
     }
-  }).catch(Error =>{
-    server.use((Error, req, res) => {
-      res.status(500).send("Sorry, something went wrong");
-    });
-  });
+  })
 });
 // this array for store location info
 // var arrayFor = [];
@@ -114,6 +110,8 @@ function Weather(weatherDescription, weatherDateTime) {
 
 //////////////////////////// route Three /////////////////////////////
 server.get("/trails", (req, res) => {
+  const lat = req.query.latitude;
+  const lon = req.query.longitude;
   // this is for hidding the key in env file
   let key = process.env.TRAILSKEY;
   // this will hit the APIs servers and get data
