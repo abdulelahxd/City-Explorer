@@ -144,15 +144,12 @@ let city;
 //////////////////////////// route FOUR /////////////////////////////
 server.get("/movies", (req, res) => {
   let city2 = city;
-  // let city = arrayFor[0].search_query;
   // this is for hidding the key in env file
   let key = process.env.MOVIES_KEY;
   // this will hist the APIs servers and get data
   let url = `https://api.themoviedb.org/3/search/movie?api_key=${key}&query=${city2}`;
   // super agent for storing the data that we request from the APIs servers
-  // console.log("hello before superagent movies");
   superagent.get(url).then((moviesJSON) => {
-    // console.log("hello after superagent movies");
     // this will get the information from the array of the response of the API server
     let moviesInfo = moviesJSON.body.results.map((val) => {
     let newMovie = new Movie(val);
@@ -173,39 +170,37 @@ function Movie(item) {
   this.released_on = item.release_date;
   movieArray.push(this)
 }
-
 //////////////////////////// route SIX /////////////////////////////
-// server.get("/movies", (req, res) => {
-//   let city2 = city;
-//   // let city = arrayFor[0].search_query;
-//   // this is for hidding the key in env file
-//   let key = process.env.MOVIES_KEY;
-//   // this will hist the APIs servers and get data
-//   let url = `https://api.themoviedb.org/3/search/movie?api_key=${key}&query=${city2}`;
-//   // super agent for storing the data that we request from the APIs servers
-//   // console.log("hello before superagent movies");
-//   superagent.get(url).then((moviesJSON) => {
-//     // console.log("hello after superagent movies");
-//     // this will get the information from the array of the response of the API server
-//     let moviesInfo = moviesJSON.body.results.map((val) => {
-//     let newMovie = new Movie(val);
-//     return newMovie;
-//     });
-//     res.send(moviesInfo);
-//   });
-// });
+server.get("/yelp", (req, res) => {
+  // this is for hidding the key in env file
+  let key = process.env.YELP_KEY;
+  // this will hist the APIs servers and get data
+  let url = `https://api.yelp.com/v3/businesses/search/Authorization:Bearer${key}`;
 
-// let movieArray = [];
-// function Movie(item) {
-//   this.title = item.title;
-//   this.overview = item.overview;
-//   this.average_votes = item.average_votes;
-//   this.total_votes = item.total_votes;
-//   this.image_url = item.image_url;
-//   this.popularity = item.popularity;
-//   this.released_on = item.released_on;
-//   movieArray.push(this)
+  // super agent for storing the data that we request from the APIs servers
+  superagent.get(url).then((yelpJSON) => {
+    // this will get the information from the array of the response of the API server
+    let yelpInfo = yelpJSON.body.results.map((val) => {
+    let newYelp = new Yelp(val);
+    return newYelp;
+    });
+    res.send(yelpInfo);
+  });
+});
+
+
+// function Yelp(item) {
+//   this.name = ;
+//   this.image_url = ;
+//   this.price = ;
+//   this.rating = ;
+//   this.url = ;
 // }
+// name": "Pike Place Chowder",
+//     "image_url": "https://s3-media3.fl.yelpcdn.com/bphoto/ijju-wYoRAxWjHPTCxyQGQ/o.jpg",
+//     "price": "$$   ",
+//     "rating": "4.5",
+//     "url": "https://www.yel
 /////////////////////////////////
 //  this is for all faild routes that the user might insert
 server.get("*", (req, res) => {
@@ -223,3 +218,9 @@ client.connect().then(() => {
     console.log(`do not kill me please ${PORT}`);
   });
 });
+
+// Client ID
+// qX30GZSesaNZwDfa-7R2Lg
+
+// API Key
+// G0JWW5d5FB3mURtmqkT5j8shHwFD0FSZloSZ1qoZBn_3NHyEGQDjTEwiCD_U-Y53OAM4kZiWFc0PxB9gm8kpsEwzSs349rz_ZQ9qzPPD7qiKI3R3lnW34PB7hzIHX3Yx
