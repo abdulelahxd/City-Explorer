@@ -44,7 +44,7 @@ server.get("/location", (req, res) => {
   client.query(SQL, authValue).then((results) => {
     //
     if (results.rows.length > 0) {
-      res.status(200).json(results.rows);
+      res.status(200).json(results.rows[0]);
       //
     } else {
       // this is for hidding the key in env file
