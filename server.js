@@ -35,10 +35,10 @@ server.get("/", (req, res) => {
 //////////////////////////// route One ///////////////////////////////
 // this is for location route
 server.get("/location", (req, res) => {
-  // arrayFor = [];
+  arrayFor = [];
   let SQL = `SELECT * FROM location WHERE search_query =$1;`;
   // this is the query
-  const city = req.query.city;
+   city = req.query.city;
   //
   let authValue = [city];
   client.query(SQL, authValue).then((results) => {
@@ -67,17 +67,17 @@ server.get("/location", (req, res) => {
         });
       });
     }
-  })
+  });
 });
 // this array for store location info
-// var arrayFor = [];
+let arrayFor = [];
 // this is constructor for query the cities
 function Location(city, geoData) {
   this.search_query = city;
   this.formatted_query = geoData[0].display_name;
   this.latitude = geoData[0].lat;
   this.longitude = geoData[0].lon;
-  // arrayFor.push(this);
+  arrayFor.push(this);
 }
 
 //////////////////////////// route Two /////////////////////////////
@@ -139,6 +139,74 @@ function Hike(trailsData) {
   this.condition_date = trailsData.conditionDate.split(" ")[0];
   this.condition_time = trailsData.conditionDate.split(" ")[1];
 }
+
+let city;
+//////////////////////////// route FOUR /////////////////////////////
+server.get("/movies", (req, res) => {
+  let city2 = city;
+  // let city = arrayFor[0].search_query;
+  // this is for hidding the key in env file
+  let key = process.env.MOVIES_KEY;
+  // this will hist the APIs servers and get data
+  let url = `https://api.themoviedb.org/3/search/movie?api_key=${key}&query=${city2}`;
+  // super agent for storing the data that we request from the APIs servers
+  // console.log("hello before superagent movies");
+  superagent.get(url).then((moviesJSON) => {
+    // console.log("hello after superagent movies");
+    // this will get the information from the array of the response of the API server
+    let moviesInfo = moviesJSON.body.results.map((val) => {
+    let newMovie = new Movie(val);
+    return newMovie;
+    });
+    res.send(moviesInfo);
+  });
+});
+
+let movieArray = [];
+function Movie(item) {
+  this.title = item.title;
+  this.overview = item.overview;
+  this.average_votes = item.average_votes;
+  this.total_votes = item.total_votes;
+  this.image_url = item.image_url;
+  this.popularity = item.popularity;
+  this.released_on = item.released_on;
+  movieArray.push(this)
+}
+
+//////////////////////////// route SIX /////////////////////////////
+// server.get("/movies", (req, res) => {
+//   let city2 = city;
+//   // let city = arrayFor[0].search_query;
+//   // this is for hidding the key in env file
+//   let key = process.env.MOVIES_KEY;
+//   // this will hist the APIs servers and get data
+//   let url = `https://api.themoviedb.org/3/search/movie?api_key=${key}&query=${city2}`;
+//   // super agent for storing the data that we request from the APIs servers
+//   // console.log("hello before superagent movies");
+//   superagent.get(url).then((moviesJSON) => {
+//     // console.log("hello after superagent movies");
+//     // this will get the information from the array of the response of the API server
+//     let moviesInfo = moviesJSON.body.results.map((val) => {
+//     let newMovie = new Movie(val);
+//     return newMovie;
+//     });
+//     res.send(moviesInfo);
+//   });
+// });
+
+// let movieArray = [];
+// function Movie(item) {
+//   this.title = item.title;
+//   this.overview = item.overview;
+//   this.average_votes = item.average_votes;
+//   this.total_votes = item.total_votes;
+//   this.image_url = item.image_url;
+//   this.popularity = item.popularity;
+//   this.released_on = item.released_on;
+//   movieArray.push(this)
+// }
+/////////////////////////////////
 //  this is for all faild routes that the user might insert
 server.get("*", (req, res) => {
   res.status(404).send("this page is not found");
