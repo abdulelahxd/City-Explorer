@@ -215,9 +215,3 @@ client.connect().then(() => {
     console.log(`do not kill me please ${PORT}`);
   });
 });
-
-// Client ID
-// qX30GZSesaNZwDfa-7R2Lg
-
-// API Key
-// G0JWW5d5FB3mURtmqkT5j8shHwFD0FSZloSZ1qoZBn_3NHyEGQDjTEwiCD_U-Y53OAM4kZiWFc0PxB9gm8kpsEwzSs349rz_ZQ9qzPPD7qiKI3R3lnW34PB7hzIHX3Yx
