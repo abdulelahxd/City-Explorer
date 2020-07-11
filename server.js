@@ -35,10 +35,10 @@ server.get("/", (req, res) => {
 //////////////////////////// route One ///////////////////////////////
 // this is for location route
 server.get("/location", (req, res) => {
-  // arrayFor = [];
+  arrayFor = [];
   let SQL = `SELECT * FROM location WHERE search_query =$1;`;
   // this is the query
-  const city = req.query.city;
+  city = req.query.city;
   //
   let authValue = [city];
   client.query(SQL, authValue).then((results) => {
@@ -67,17 +67,17 @@ server.get("/location", (req, res) => {
         });
       });
     }
-  })
+  });
 });
 // this array for store location info
-// var arrayFor = [];
+let arrayFor = [];
 // this is constructor for query the cities
 function Location(city, geoData) {
   this.search_query = city;
   this.formatted_query = geoData[0].display_name;
   this.latitude = geoData[0].lat;
   this.longitude = geoData[0].lon;
-  // arrayFor.push(this);
+  arrayFor.push(this);
 }
 
 //////////////////////////// route Two /////////////////////////////
@@ -139,6 +139,66 @@ function Hike(trailsData) {
   this.condition_date = trailsData.conditionDate.split(" ")[0];
   this.condition_time = trailsData.conditionDate.split(" ")[1];
 }
+
+let city;
+//////////////////////////// route FOUR /////////////////////////////
+server.get("/movies", (req, res) => {
+  let city2 = city;
+  // this is for hidding the key in env file
+  let key = process.env.MOVIES_KEY;
+  // this will hist the APIs servers and get data
+  let url = `https://api.themoviedb.org/3/search/movie?api_key=${key}&query=${city2}`;
+  // super agent for storing the data that we request from the APIs servers
+  superagent.get(url).then((moviesJSON) => {
+    // this will get the information from the array of the response of the API server
+    let moviesInfo = moviesJSON.body.results.map((val) => {
+      let newMovie = new Movie(val);
+      return newMovie;
+    });
+    res.send(moviesInfo);
+  });
+});
+
+let movieArray = [];
+function Movie(item) {
+  this.title = item.title;
+  this.overview = item.overview;
+  this.average_votes = item.vote_average;
+  this.total_votes = item.vote_count;
+  this.image_url = item.poster_path;
+  this.popularity = item.popularity;
+  this.released_on = item.release_date;
+  movieArray.push(this);
+}
+//////////////////////////// route SIX /////////////////////////////
+server.get("/yelp", (req, res) => {
+  // this is for hidding the key in env file
+  let key = process.env.YELP_KEY;
+  const lat = req.query.latitude;
+  const lon = req.query.longitude;
+  // this will hist the APIs servers and get data
+  let url = `https://api.yelp.com/v3/businesses/search?latitude=${lat}&longitude=${lon}`;
+
+  // super agent for storing the data that we request from the APIs servers
+  superagent.get(url).set('Authorization', 'Bearer ' + `${key}`).then((yelpJSON) => {
+    // this will get the information from the array of the response of the API server
+    let yelpInfo = yelpJSON.body.businesses.map((val) => {
+      let newYelp = new Yelp(val);
+      return newYelp;
+    });
+    res.send(yelpInfo);
+  });
+});
+
+function Yelp(item) {
+  this.name = item.name;
+  this.image_url = item.image_url;
+  this.price = item.price;
+  this.rating = item.rating;
+  this.url = item.url;
+}
+
+/////////////////////////////////
 //  this is for all faild routes that the user might insert
 server.get("*", (req, res) => {
   res.status(404).send("this page is not found");
@@ -155,3 +215,9 @@ client.connect().then(() => {
     console.log(`do not kill me please ${PORT}`);
   });
 });
+
+// Client ID
+// qX30GZSesaNZwDfa-7R2Lg
+
+// API Key
+// G0JWW5d5FB3mURtmqkT5j8shHwFD0FSZloSZ1qoZBn_3NHyEGQDjTEwiCD_U-Y53OAM4kZiWFc0PxB9gm8kpsEwzSs349rz_ZQ9qzPPD7qiKI3R3lnW34PB7hzIHX3Yx
