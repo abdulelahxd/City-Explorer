@@ -38,7 +38,7 @@ server.get("/location", (req, res) => {
   arrayFor = [];
   let SQL = `SELECT * FROM location WHERE search_query =$1;`;
   // this is the query
-   city = req.query.city;
+  city = req.query.city;
   //
   let authValue = [city];
   client.query(SQL, authValue).then((results) => {
@@ -152,8 +152,8 @@ server.get("/movies", (req, res) => {
   superagent.get(url).then((moviesJSON) => {
     // this will get the information from the array of the response of the API server
     let moviesInfo = moviesJSON.body.results.map((val) => {
-    let newMovie = new Movie(val);
-    return newMovie;
+      let newMovie = new Movie(val);
+      return newMovie;
     });
     res.send(moviesInfo);
   });
@@ -168,39 +168,36 @@ function Movie(item) {
   this.image_url = item.poster_path;
   this.popularity = item.popularity;
   this.released_on = item.release_date;
-  movieArray.push(this)
+  movieArray.push(this);
 }
 //////////////////////////// route SIX /////////////////////////////
 server.get("/yelp", (req, res) => {
   // this is for hidding the key in env file
   let key = process.env.YELP_KEY;
+  const lat = req.query.latitude;
+  const lon = req.query.longitude;
   // this will hist the APIs servers and get data
-  let url = `https://api.yelp.com/v3/businesses/search/Authorization:Bearer${key}`;
+  let url = `https://api.yelp.com/v3/businesses/search?latitude=${lat}&longitude=${lon}`;
 
   // super agent for storing the data that we request from the APIs servers
-  superagent.get(url).then((yelpJSON) => {
+  superagent.get(url).set('Authorization', 'Bearer ' + `${key}`).then((yelpJSON) => {
     // this will get the information from the array of the response of the API server
-    let yelpInfo = yelpJSON.body.results.map((val) => {
-    let newYelp = new Yelp(val);
-    return newYelp;
+    let yelpInfo = yelpJSON.body.businesses.map((val) => {
+      let newYelp = new Yelp(val);
+      return newYelp;
     });
     res.send(yelpInfo);
   });
 });
 
+function Yelp(item) {
+  this.name = item.name;
+  this.image_url = item.image_url;
+  this.price = item.price;
+  this.rating = item.rating;
+  this.url = item.url;
+}
 
-// function Yelp(item) {
-//   this.name = ;
-//   this.image_url = ;
-//   this.price = ;
-//   this.rating = ;
-//   this.url = ;
-// }
-// name": "Pike Place Chowder",
-//     "image_url": "https://s3-media3.fl.yelpcdn.com/bphoto/ijju-wYoRAxWjHPTCxyQGQ/o.jpg",
-//     "price": "$$   ",
-//     "rating": "4.5",
-//     "url": "https://www.yel
 /////////////////////////////////
 //  this is for all faild routes that the user might insert
 server.get("*", (req, res) => {
